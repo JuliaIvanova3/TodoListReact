@@ -1,73 +1,90 @@
 import React from 'react';
 import './TodoList.css'
 
-import TodoListFooter from './ToDoListFooter';
-import TodoListTaskCreate from './TodoListTaskCreate';
-import TaskList from './TaskList';
+import TodoList from './TodoListTaskCreate';
+
+import { Date } from 'core-js';
 
 
-class TodoList extends React.Component{
+
+class TodoApp extends React.Component{
     constructor(props){
-        super();
+        super(props);
 
-        this.newIndex = 1;
-
-        this.state={
-            tasks: [
-                
-                {
-                    id:0,
-                    title: "learn react",
-                   isDone: false
-                }
-                 ]
-
+        this.state= {
+            items: [],
+            text: ""
         };
+
+        this.handleTextChange = this.handleTextChange.bind(this);
+        this.handleAddItem = this.handleAddItem.bind(this);
+        this.markItemCompleted = this.markItemCompleted.bind(this);
+        this.handleDeleteItem = this.handleDeleteItem.bind(this);
     }
 
-
-    creteNewTask(e) {
-        
-      
-            this.setState({
-                tasks: [...this.state.tasks, e]
-            });
-            
-    
-    }
-
-    deleteTask(taskId){
-        
-        const newTasksList = this.state.tasks.filter((t) => {
-            return t.id !== taskId;
-        });
-        
+    handleTextChange(event){
         this.setState({
-            tasks:newTasksList
+            text: event.target.value
+        });
+    }
+    handleAddItem(event){
+        event.preventDefault();
+
+        var newItem = {
+            id: Date.now(),
+            text: this.state.text,
+            done: false
+        };
+
+        this.setState((prevState) => ({
+            items:prevState.items.concat(newItem),
+            text: ""
+        }));
+    }
+    markItemCompleted(itemId){
+        var updatedItems = this.state.items.map(item =>{
+            if (itemId === item.id)
+            item.done = !item.done;
+
+            return item;
+        });
+
+        this.setState({
+            items: [].concat(updatedItems)
+        });
+    }
+    handleDeleteItem(itemId){
+        var updatedItems = this.state.items.filter(item => {
+            return item.id !==itemId;
+        });
+
+        this.setState({
+            items: [].concat(updatedItems)
         });
     }
 
-    toggleTaskStatus(task){
-        task.isDone = !task.isDone;
-
-        this.forceUpdate();
-    }
-
+    
 
     render(){
         return(
-            <div className="todoList">
-               
-                <TodoListTaskCreate onCreate={this.creteNewTask.bind(this)}/>
-
-                <TaskList tasks={this.state.tasks}
-                        onDelete={this.deleteTask.bind(this)}
-                />
-                
-                <TodoListFooter tasks={this.state.tasks}/>
+            <div>
+            <h3 className="apptitle">MY TO DO LIST</h3>
+            <div className="row">
+              <div className="col-md-3">
+                <TodoList items={this.state.items} onItemCompleted={this.markItemCompleted} onDeleteItem={this.handleDeleteItem} />
+              </div>
             </div>
+            <form className="row">
+              <div className="col-md-3">
+                <input type="text" className="form-control" onChange={this.handleTextChange} value={this.state.text} />
+              </div>
+              <div className="col-md-3">
+                <button className="btn btn-primary" onClick={this.handleAddItem} disabled={!this.state.text}> Add</button>
+              </div>
+            </form>
+          </div>
         );
     }
 }
 
-export default TodoList;
+export default TodoApp;

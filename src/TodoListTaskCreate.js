@@ -1,41 +1,18 @@
 import React from 'react';
+import TodoItem from './TaskList';
 
 
-class TodoListTaskCreate extends React.Component{
+class TodoList extends React.Component{
    
 
-    creteNewTask(e) {
-        
-        if(e.key ==='Enter'){
-          
-            const newTask = {
-            
-                    title: e.currentTarget.value, 
-                    isDone: false,
-                    id: this.newIndex
-                
-            };
-
-           this.props.onCreate(newTask);
-
-           e.currentTarget.value ='';
-
-            this.newIndex++;
-        }
-       
-    }
-
-   
-    render(){
-        return(
-            
-                <div className="header">
-                    <input  size="50" onKeyPress={this.creteNewTask.bind(this)}/>
-                </div>
-                
-           
+    render() {
+        return (
+          <ul className="todolist">
+            {this.props.items.map(item => (
+              <TodoItem key={item.id} id={item.id} text={item.text} completed={item.done} onItemCompleted={this.props.onItemCompleted} onDeleteItem={this.props.onDeleteItem} />
+            ))}
+          </ul>
         );
-    }
-}
+      }}
 
-export default TodoListTaskCreate;
+export default TodoList;
